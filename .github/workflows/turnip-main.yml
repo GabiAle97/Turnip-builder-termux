@@ -14,10 +14,9 @@ jobs:
       - name: Build Turnip
         run: |
           sudo apt update
-          sudo apt remove llvm-*
-          sudo apt install libudev-dev llvm-18* libclc-19-dev cargo build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
+          sudo apt install libudev-dev libclc-19-dev cargo build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
           llvm-config --version
-          git clone https://gitlab.freedesktop.org/mesa/mesa.git --recurse-submodules
+          git clone https://gitlab.freedesktop.org/Pipetto-crypto/mesa.git --recurse-submodules
           cd mesa
           pip install meson
           cargo install bindgen-cli
