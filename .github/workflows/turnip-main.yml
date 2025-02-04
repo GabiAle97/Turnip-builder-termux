@@ -1,0 +1,23 @@
+name: Turnip Main
+
+on:
+  schedule:
+    - cron:  '0 0 1,17 * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Turnip
+        run: |
+          sudo apt update
+          sudo apt install build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols
+          pip install meson
+          git clone https://gitlab.freedesktop.org/mesa/mesa.git --recurse-submodules
+          cd mesa
+          meson setup build
+          ninja -C build/
+          find . -iname "libvulkan_freedreno.so"
