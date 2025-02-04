@@ -18,7 +18,7 @@ jobs:
           git clone https://gitlab.freedesktop.org/mesa/mesa.git --recurse-submodules
           cd mesa
           pip install meson
-          cargo add bindgen
+          cargo install bindgen
           meson setup build
           ninja -C build/
           find . -iname "libvulkan_freedreno.so"
