@@ -14,8 +14,8 @@ jobs:
       - name: Build Turnip
         run: |
           sudo apt update
-          sudo apt remove llvm-17 llvm-16
-          sudo apt install libudev-dev llvm-18-dev libclc-19-dev cargo build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
+          sudo apt remove llvm-*
+          sudo apt install libudev-dev llvm-18* libclc-19-dev cargo build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
           git clone https://gitlab.freedesktop.org/mesa/mesa.git --recurse-submodules
           cd mesa
           pip install meson
