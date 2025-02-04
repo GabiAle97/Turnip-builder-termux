@@ -14,10 +14,9 @@ jobs:
       - name: Build Turnip
         run: |
           sudo apt update
-          sudo apt install cargo build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
+          sudo apt install build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
           pip install meson
-          cargo add bindgen
-          git clone https://gitlab.freedesktop.org/mesa/mesa.git --recurse-submodules
+          git clone https://gitlab.freedesktop.org/Pipetto-crypto/mesa.git --recurse-submodules
           cd mesa
           meson setup build
           ninja -C build/
