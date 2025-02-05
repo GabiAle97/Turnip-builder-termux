@@ -1,0 +1,34 @@
+name: VKD3D
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron:  '0 0 1,17 * *'
+  workflow_dispatch:
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build VKD3D
+        run: |
+          gh run download $(gh run list --repo HansKristian-Work/vkd3d-proton --limit 1 --json databaseId --jq '.[0].databaseId') --repo HansKristian-Work/vkd3d-proton
+          cd vkd3d*
+          mv x86 syswow64
+          mv x64 system32
+          cd -
+          mv vkd3d* windows
+          zip -r VKD3D-dev.zip windows
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: VKD3D
+          files: |
+            ./VKD3D-dev.zip
+          
