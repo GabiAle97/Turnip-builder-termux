@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Turnip
         run: |
+          sudo sed -i '/^deb /s/^deb /deb-src /' /etc/apt/sources.list
           sudo apt update
           sudo apt-get build-dep mesa
           sudo apt install llvm-spirv libudev-dev libclc-19-dev cargo build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
