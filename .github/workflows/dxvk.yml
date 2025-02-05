@@ -17,8 +17,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Build Turnip
+      - name: Build DXVK
         run: |
           gh run download 13163236257 --repo doitsujin/dxvk
-          ls -la
+          cd dxvk*
+          mv x32 syswow64
+          mv x64 system32
+          cd -
+          mv dxvk* windows
+          zip -r DXVK-dev.zip windows
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: DXVK
+          files: |
+            ./DXVK-dev.zip
           
