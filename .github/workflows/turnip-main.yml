@@ -17,7 +17,6 @@ jobs:
           sudo cat /etc/apt/sources.list
           sudo apt update
           sudo apt-get build-dep mesa
-  deb-src http://archive.ubuntu.com/ubuntu/ focal main restricted
         sudo apt install llvm-spirv libudev-dev libclc-19-dev cargo build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
           git clone https://gitlab.freedesktop.org/Pipetto-crypto/mesa.git --recurse-submodules
           cd mesa
