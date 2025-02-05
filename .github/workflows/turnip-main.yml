@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
 
     steps:
       - uses: actions/checkout@v3
@@ -23,4 +23,5 @@ jobs:
           pip install meson
           cargo install bindgen-cli
           meson build-freedreno -D platforms=x11 -Dgallium-drivers= -D vulkan-drivers=freedreno -D libunwind=disabled -D microsoft-clc=disabled -D valgrind=disabled -D freedreno-kmds=kgsl,msm
+          ninja -C build-freedreno
           find . -iname "libvulkan_freedreno.so"
