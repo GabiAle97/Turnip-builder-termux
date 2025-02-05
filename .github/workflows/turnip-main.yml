@@ -13,11 +13,12 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Turnip
         run: |
-          sudo echo "deb-src http://archive.ubuntu.com/ubuntu/ noble main restricted" >> /etc/apt/sources.list
+          sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
           sudo cat /etc/apt/sources.list
           sudo apt update
           sudo apt-get build-dep mesa
-          sudo apt install llvm-spirv libudev-dev libclc-19-dev cargo build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
+  deb-src http://archive.ubuntu.com/ubuntu/ focal main restricted
+        sudo apt install llvm-spirv libudev-dev libclc-19-dev cargo build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
           git clone https://gitlab.freedesktop.org/Pipetto-crypto/mesa.git --recurse-submodules
           cd mesa
           pip install meson
