@@ -22,6 +22,5 @@ jobs:
           cd mesa
           pip install meson
           cargo install bindgen-cli
-          meson setup build
-          ninja -C build/
+          meson build-freedreno -D platforms=x11 -Dgallium-drivers= -D vulkan-drivers=freedreno -D libunwind=disabled -D microsoft-clc=disabled -D valgrind=disabled -D freedreno-kmds=kgsl,msm
           find . -iname "libvulkan_freedreno.so"
