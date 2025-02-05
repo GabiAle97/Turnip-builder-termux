@@ -20,3 +20,5 @@ jobs:
       - name: Build Turnip
         run: |
           gh run download 13163236257 --repo doitsujin/dxvk
+          7z x dxvk*
+          ls -la
