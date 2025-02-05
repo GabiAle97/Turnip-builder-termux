@@ -18,15 +18,10 @@ jobs:
           sudo apt update
           sudo apt-get build-dep mesa
           sudo apt install clang libclang-dev libllvmspirvlib-17-dev libudev-dev libclc-19-dev cargo build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
-          git clone https://gitlab.freedesktop.org/Pipetto-crypto/mesa.git --recurse-submodules
+          git clone https://gitlab.freedesktop.org/Pipetto-crypto/mesa.git -b winlator_wsi-termux-x11 --depth=1 --recurse-submodules
           cd mesa
           pip install meson
           cargo install bindgen-cli
-          curl -o wsi1.patch https://raw.githubusercontent.com/GabiAle97/Turnip-builder-termux/refs/heads/main/wsi1.patch
-          curl -o wsi2.patch https://raw.githubusercontent.com/GabiAle97/Turnip-builder-termux/refs/heads/main/wsi2.patch
-          curl -o dma-heap.patch https://raw.githubusercontent.com/GabiAle97/Turnip-builder-termux/refs/heads/main/dma-heap.patch
-          patch -d . -Np1 < wsi2.patch
-          patch -d . -Np1 < dma-heap.patch
           meson build-freedreno -D platforms=x11 -Dgallium-drivers= -D vulkan-drivers=freedreno -D libunwind=disabled -D microsoft-clc=disabled -D valgrind=disabled -D freedreno-kmds=kgsl,msm
           ninja -C build-freedreno
           find . -iname "libvulkan_freedreno.so"
