@@ -25,6 +25,8 @@ jobs:
           cd mesa
           meson build-freedreno -D platforms=x11 -Dgallium-drivers= -D vulkan-drivers=freedreno -D libunwind=disabled -D microsoft-clc=disabled -D valgrind=disabled -D freedreno-kmds=kgsl,msm
           ninja -C build-freedreno
+          cd build-freedreno/src/freedreno/vulkan/
+          7z a Turnip-dev.7z libvulkan_freedreno.so
       - uses: actions/upload-artifact@v4
         with:
           name: Turnip WSI
@@ -33,4 +35,4 @@ jobs:
         with:
           tag_name: Turnip
           files: |
-            ./mesa/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
+            ./mesa/build-freedreno/src/freedreno/vulkan/Turnip-dev.7z
