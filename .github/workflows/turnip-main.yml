@@ -26,4 +26,4 @@ jobs:
         with:
           tag_name: Turnip
           files: |
-            ./build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
+            ./mesa/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
