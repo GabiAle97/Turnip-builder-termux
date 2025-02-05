@@ -24,4 +24,8 @@ jobs:
           cargo install bindgen-cli
           meson build-freedreno -D platforms=x11 -Dgallium-drivers= -D vulkan-drivers=freedreno -D libunwind=disabled -D microsoft-clc=disabled -D valgrind=disabled -D freedreno-kmds=kgsl,msm
           ninja -C build-freedreno
-          find . -iname "libvulkan_freedreno.so"
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: Turnip
+          files: |
+            ./build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
