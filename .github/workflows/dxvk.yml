@@ -1,0 +1,19 @@
+name: DXVK
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron:  '0 0 1,17 * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Turnip
+        run: |
+          gh run download 13163236257 --repo doitsujin /dxvk
