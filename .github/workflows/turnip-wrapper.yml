@@ -31,6 +31,6 @@ jobs:
           path: ./mesa/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: Turnip Wrapper
+          tag_name: Wrapper
           files: |
             ./mesa/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
