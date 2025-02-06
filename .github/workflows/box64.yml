@@ -32,6 +32,7 @@ jobs:
           make -j8
           sudo make install
           sudo cp $PREFIX/glibc/bin/box64 .
+          patchelf --set-interpreter /data/data/com.termux/files/usr/glibc/lib/ld-linux-aarch64.so.1 box64
           tar -czvf box64-dev-SD8G2.tar.xz box64
       - uses: softprops/action-gh-release@v2
         with:
