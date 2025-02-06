@@ -38,5 +38,5 @@ jobs:
         with:
           tag_name: Box64
           files: |
-            /data/data/com.termux/files/usr/glibc/bin/box64-dev-SD8G2.tar.xz
+            ~/box64/build/box64-dev-SD8G2.tar.xz
           
