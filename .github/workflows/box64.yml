@@ -13,24 +13,30 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v3
       - name: Build Box64
         run: |
+          unset LD_PRELOAD
+          export GLIBC_PREFIX=/data/data/com.termux/files/usr/glibc
+          export PATH=$GLIBC_PREFIX/bin:$PATH
+          cd ~/
           git clone https://github.com/ptitSeb/box64
-          cd box64
+          cd ~/box64
           sed -i 's/\/usr/\/data\/data\/com.termux\/files\/usr\/glibc/g' CMakeLists.txt
           sed -i 's/\/etc/\/data\/data\/com.termux\/files\/usr\/glibc\/etc/g' CMakeLists.txt
           mkdir build
           cd build
           cmake --install-prefix $PREFIX/glibc .. -DARM_DYNAREC=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBAD_SIGNAL=ON -DSD8G2=ON
           make -j8
+          make install
+          cd $PREFIX/glibc/bin
           tar -czvf box64-dev-SD8G2.tar.xz box64
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: Box64
           files: |
-            ./box64/build/box64-dev-SD8G2.tar.xz
+            /data/data/com.termux/files/usr/glibc/bin/box64-dev-SD8G2.tar.xz
           
