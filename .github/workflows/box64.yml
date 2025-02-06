@@ -27,10 +27,10 @@ jobs:
           cd build
           cmake --install-prefix $PREFIX/glibc .. -DARM_DYNAREC=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBAD_SIGNAL=ON -DSD8G2=ON
           make -j8
-          ls -laR
+          tar -czvf box64-dev-SD8G2.tar.xz box64
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: Box64
           files: |
-            ./box64/box64-dev-SD8G2.tar.xz
+            ./box64/build/box64-dev-SD8G2.tar.xz
           
