@@ -22,14 +22,14 @@ jobs:
           sudo apt-get build-dep mesa
           git clone https://gitlab.freedesktop.org/Pipetto-crypto/mesa.git -b winlator_wsi-termux-x11 --depth=1
           cd mesa
-          meson build-freedreno -D platforms=x11 -Dgallium-drivers= -D vulkan-drivers=freedreno -D libunwind=disabled -D microsoft-clc=disabled -D valgrind=enabled -D freedreno-kmds=kgsl,msm -Dvideo-codecs=all -Dvulkan-beta=true
+          meson build-freedreno -D platforms=x11 -Dgallium-drivers=freedreno -D vulkan-drivers=freedreno -D libunwind=disabled -D microsoft-clc=disabled -D valgrind=enabled -D freedreno-kmds=kgsl,msm -Dvideo-codecs=all -Dvulkan-beta=true -Dgallium-d3d12-video=true -Dgallium-d3d12-graphics=true
           ninja -C build-freedreno
           cd build-freedreno/src/freedreno/vulkan/
           7z a Turnip-dev.7z libvulkan_freedreno.so
       - uses: actions/upload-artifact@v4
         with:
           name: Turnip WSI
-          path: ./mesa/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
+          path: ./mesa/build-freedreno/src/freedreno
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: Turnip
