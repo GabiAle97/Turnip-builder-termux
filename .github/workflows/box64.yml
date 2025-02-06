@@ -1,0 +1,36 @@
+name: BOX64
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron:  '20 14 * * *'
+  workflow_dispatch:
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Box64
+        run: |
+          git clone https://github.com/ptitSeb/box64
+          cd box64
+          sed -i 's/\/usr/\/data\/data\/com.termux\/files\/usr\/glibc/g' CMakeLists.txt
+          sed -i 's/\/etc/\/data\/data\/com.termux\/files\/usr\/glibc\/etc/g' CMakeLists.txt
+          mkdir build
+          cd build
+          cmake --install-prefix $PREFIX/glibc .. -DARM_DYNAREC=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBAD_SIGNAL=ON -DSD8G2=ON
+          make -j8
+          ls -la
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: Box64
+          files: |
+            ./box64/box64-dev-SD8G2.tar.xz
+          
