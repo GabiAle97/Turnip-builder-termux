@@ -28,9 +28,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Turnip Wrapper
-          path: ./mesa/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
+          path: ./mesa-termux/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: Wrapper
           files: |
-            ./mesa/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
+            ./mesa-termux/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
