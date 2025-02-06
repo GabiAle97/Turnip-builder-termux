@@ -20,10 +20,9 @@ jobs:
           sudo cat /etc/apt/sources.list
           sudo apt update
           sudo apt-get build-dep mesa
-          sudo apt install clang libclang-dev libllvmspirvlib-17-dev libudev-dev libclc-19-dev cargo build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
           git clone https://gitlab.freedesktop.org/Pipetto-crypto/mesa.git -b winlator_wsi-termux-x11 --depth=1
           cd mesa
-          meson build-freedreno -D platforms=x11 -Dgallium-drivers= -D vulkan-drivers=freedreno -D libunwind=enabled -D microsoft-clc=disabled -D valgrind=enabled -D freedreno-kmds=kgsl,msm
+          meson build-freedreno -D platforms=x11 -Dgallium-drivers= -D vulkan-drivers=freedreno -D libunwind=disabled -D microsoft-clc=disabled -D valgrind=enabled -D freedreno-kmds=kgsl,msm
           ninja -C build-freedreno
           cd build-freedreno/src/freedreno/vulkan/
           7z a Turnip-dev.7z libvulkan_freedreno.so
