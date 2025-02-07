@@ -9,8 +9,8 @@ Every build is automatically available from **tdb_manager** of [DarkOS Lite](htt
 - Turnip builds are in "Turnip-dev" option. It allways install the latest generated build
 - DXVK builds are in "DXVK.dev" option. It allways install the latest generated build
 - VKD3D builds are in "VKD3D DEV" option. It allways install the latest generated build
-- Box64 builds are in "Box64-DEV.SD8G2" option. It allways install the latest generated build
-    ***note: Box64 SD8G2 build is working on every processor as far as I tried. If you need an specific build for other processors, please open an issue***
+- Box64 builds are in "Box64-DEV.SD8G2" option. It allways install the latest generated build\
+    ***NOTE: Box64 SD8G2 build is working on every processor as far as I tried. If you need an specific build for other processors, please open an issue***
 
 Thanks to:
 
