@@ -32,4 +32,4 @@ jobs:
         with:
           tag_name: Wrapper
           files: |
-            ./mesa/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
+            ./mesa/build-freedreno/src/virtio/vulkan/libvulkan_virtio.so
