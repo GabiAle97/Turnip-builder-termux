@@ -22,9 +22,8 @@ jobs:
           unset LD_PRELOAD
           export GLIBC_PREFIX=/data/data/com.termux/files/usr/glibc
           export PATH=$GLIBC_PREFIX/bin:$PATH
-          cd ~/
           git clone https://github.com/ptitSeb/box64
-          cd ~/box64
+          cd box64
           sed -i 's/\/usr/\/data\/data\/com.termux\/files\/usr\/glibc/g' CMakeLists.txt
           sed -i 's/\/etc/\/data\/data\/com.termux\/files\/usr\/glibc\/etc/g' CMakeLists.txt
           mkdir build
@@ -33,10 +32,11 @@ jobs:
           make -j8
           sudo make install
           sudo cp $PREFIX/glibc/bin/box64 .
+          patchelf --set-interpreter /data/data/com.termux/files/usr/glibc/lib/ld-linux-aarch64.so.1 box64
           tar -czvf box64-dev-SD8G2.tar.xz box64
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: Box64
           files: |
-            ~/box64/build/box64-dev-SD8G2.tar.xz
+            ./box64/build/box64-dev-SD8G2.tar.xz
           
