@@ -28,7 +28,7 @@ jobs:
           sed -i 's/\/etc/\/data\/data\/com.termux\/files\/usr\/glibc\/etc/g' CMakeLists.txt
           mkdir build
           cd build
-          cmake --install-prefix $PREFIX/glibc .. -DARM_DYNAREC=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBAD_SIGNAL=ON -DSD8G2=ON
+          cmake --install-prefix $PREFIX/glibc .. -DARM_DYNAREC=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBAD_SIGNAL=ON -DSAVE_MEM=ON -DBOX32=ON -DBOX32_BINFMT=ON -DNOLOADADDR=ON -D -DSD8G2=ON
           make -j8
           sudo make install
           sudo cp $PREFIX/glibc/bin/box64 .
