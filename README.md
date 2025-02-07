@@ -22,4 +22,4 @@ For helping figuring out fixes!
 # SUPPORT
 
 - Follow me on my Youtube Channel [EmuTesting](https://www.youtube.com/@EmuTesting)
-- [Support DarkOS Lite](https://paypal.me/GabiAle97?country.x=AR&locale.x=es_XC) (is a hard work to maintain it the more stable I can ??)
+- [Support DarkOS Lite](https://paypal.me/GabiAle97?country.x=AR&locale.x=es_XC) (is a hard work to maintain it the more stable I can :sweat_smile:)
