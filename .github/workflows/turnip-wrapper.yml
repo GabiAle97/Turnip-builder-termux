@@ -20,10 +20,9 @@ jobs:
           sudo cat /etc/apt/sources.list
           sudo apt update
           sudo apt-get build-dep mesa
-          sudo apt install clang libclang-dev libllvmspirvlib-17-dev libudev-dev libclc-19-dev cargo build-essential git meson ninja-build python3-mako python3-pip libdrm-dev libwayland-dev wayland-protocols glslang-tools
-          git clone https://gitlab.freedesktop.org/GabiAle97/mesa-termux.git -b wrapper --depth=1
+          git clone https://gitlab.freedesktop.org/Pipetto-crypto/mesa.git -b winlator_wsi-termux-x11 --depth=1
           cd mesa-termux
-          meson build-freedreno -D platforms=x11 -Dgallium-drivers= -D vulkan-drivers=freedreno -D libunwind=disabled -D microsoft-clc=disabled -D valgrind=disabled -D freedreno-kmds=kgsl,msm
+          meson build-freedreno -D platforms=x11 -Dgallium-drivers= -D vulkan-drivers=virtio -D libunwind=disabled -D microsoft-clc=disabled -D valgrind=disabled -D freedreno-kmds=virtio
           ninja -C build-freedreno
       - uses: actions/upload-artifact@v4
         with:
