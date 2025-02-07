@@ -21,15 +21,15 @@ jobs:
           sudo apt update
           sudo apt-get build-dep mesa
           git clone https://gitlab.freedesktop.org/Pipetto-crypto/mesa.git -b winlator_wsi-termux-x11 --depth=1
-          cd mesa-termux
+          cd mesa
           meson build-freedreno -D platforms=x11 -Dgallium-drivers= -D vulkan-drivers=virtio -D libunwind=disabled -D microsoft-clc=disabled -D valgrind=disabled -D freedreno-kmds=virtio
           ninja -C build-freedreno
       - uses: actions/upload-artifact@v4
         with:
           name: Turnip Wrapper
-          path: ./mesa-termux/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
+          path: ./mesa/build-freedreno/
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: Wrapper
           files: |
-            ./mesa-termux/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
+            ./mesa/build-freedreno/src/freedreno/vulkan/libvulkan_freedreno.so
