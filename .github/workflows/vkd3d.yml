@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build VKD3D
         run: |
-          gh run download $(gh run list --repo HansKristian-Work/vkd3d-proton --json databaseId,workflowName --jq '.[] | select(.workflowName == "Artifacts (Package)") | .databaseId' | head -n 1) --repo HansKristian-Work/vkd3d-proton
+          gh run download $(gh run list --repo HansKristian-Work/vkd3d-proton --json databaseId,workflowName,conclusion --jq '.[] | select(.workflowName == "Artifacts (Package)") | select(.conclusion == "success") | .databaseId' | head -n 1) --repo HansKristian-Work/vkd3d-proton
           cd vkd3d*
           mv x86 syswow64
           mv x64 system32
