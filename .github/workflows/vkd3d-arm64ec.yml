@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout VKD3D-Proton  # CAMBIO: Clona directamente del repo oficial
+    - name: Checkout VKD3D-Proton
       uses: actions/checkout@v4
       with:
         repository: 'HansKristian-Work/vkd3d-proton'  # Repo upstream con meson.build
@@ -53,7 +53,7 @@ jobs:
         c_ld = 'lld'
         cpp_ld = 'lld'
         strip = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-strip'
-        pkgconfig = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/pkg-config'
+        pkg-config = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/pkg-config'
 
         [host_machine]
         system = 'android'
@@ -61,10 +61,12 @@ jobs:
         cpu = 'armv8'
         endian = 'little'
 
-        [properties]
-        sys_root = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot'
+        [built-in options]
         c_args = ['-target', 'aarch64-linux-android34', '-D__ANDROID_API__=34', '-march=armv8.2-a+fp16+rcpc', '-mfpu=neon-fp-armv8', '-mfloat-abi=hard']
         cpp_args = ['-target', 'aarch64-linux-android34', '-D__ANDROID_API__=34', '-march=armv8.2-a+fp16+rcpc', '-mfpu=neon-fp-armv8', '-mfloat-abi=hard']
+
+        [properties]
+        sys_root = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot'
         bindgen_clang_arguments = ['-target', 'aarch64-linux-android34', '--sysroot', '$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot']
         EOF
         # Debug: Verifica cross-file
@@ -80,8 +82,8 @@ jobs:
         PKG_CONFIG_PATH: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/pkgconfig"
       run: |
         export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
-        # Comando en una sola línea para evitar parsing issues
-        meson setup . build --cross-file cross-android.meson -Ddebug=false -Doptimization=s -Dstrip=true -Dwine=disabled
+        # Comando en una sola línea: Removido -Dwine=disabled (opción inexistente)
+        meson setup . build --cross-file cross-android.meson -Ddebug=false -Doptimization=s -Dstrip=true
         # Verifica configuración (targets disponibles)
         if [ -d build ]; then ninja -C build -t targets | head -20; else echo "Build dir no creado"; fi
 
