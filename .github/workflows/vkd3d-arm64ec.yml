@@ -1,0 +1,100 @@
+name: Build VKD3D-Proton for Android/Winlator (aarch64)
+
+on:
+  push:
+    branches: [ master ]  # Cambia a 'develop' si usas una fork con esa rama
+  workflow_dispatch:  # Permite ejecución manual
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive  # Para SPIRV-Cross, GLSLang y otros submódulos
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y meson ninja-build pkg-config git clang cmake ccache
+        sudo apt install -y libvulkan-dev spirv-tools libglslang-dev  # Headers para Vulkan y shaders (host)
+        # Opcional: Para widl si no usas wine: sudo apt install -y wine-stable  # Pero desactívalo para Android
+
+    - name: Setup Android NDK
+      uses: nttld/setup-ndk@v1
+      id: setup-ndk
+      with:
+        ndk-version: r26b  # Versión reciente con LLVM/Clang para API 34+
+
+    - name: Create Meson cross-file for Android aarch64 (Winlator/FEX-compatible)
+      run: |
+        export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
+        cat > cross-android.meson << EOF
+        [constants]
+        ndk_path = '$NDK'
+
+        [binaries]
+        ar = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-ar'
+        c = ['ccache', '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang']
+        cpp = ['ccache', '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang++', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '--start-no-unused-arguments', '-static-libstdc++', '--end-no-unused-arguments']
+        c_ld = 'lld'
+        cpp_ld = 'lld'
+        strip = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-strip'
+        pkgconfig = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/pkg-config'
+
+        [host_machine]
+        system = 'android'
+        cpu_family = 'aarch64'
+        cpu = 'armv8'
+        endian = 'little'
+
+        [properties]
+        sys_root = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot'
+        c_args = ['-target', 'aarch64-linux-android34', '-D__ANDROID_API__=34', '-march=armv8.2-a+fp16+rcpc', '-mfpu=neon-fp-armv8', '-mfloat-abi=hard']
+        cpp_args = ['-target', 'aarch64-linux-android34', '-D__ANDROID_API__=34', '-march=armv8.2-a+fp16+rcpc', '-mfpu=neon-fp-armv8', '-mfloat-abi=hard']
+        bindgen_clang_arguments = ['-target', 'aarch64-linux-android34', '--sysroot', '$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot']
+        EOF
+
+    - name: Setup Meson build
+      env:
+        CC: clang
+        CXX: clang++
+        PKG_CONFIG_SYSROOT_DIR: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+        PKG_CONFIG_LIBDIR: "${PKG_CONFIG_SYSROOT_DIR}/usr/lib/aarch64-linux-android"
+        PKG_CONFIG_PATH: "${PKG_CONFIG_SYSROOT_DIR}/usr/lib/aarch64-linux-android/pkgconfig"
+      run: |
+        export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
+        meson setup build --cross-file cross-android.meson \
+          -Ddebug=false \
+          -Doptimization=s \
+          -Dstrip=true \
+          -Dwine=disabled  # Desactiva wine/widl para build Android puro
+          # Opcional: -Dvulkan=enabled (por default)
+        # Verifica configuración
+        meson introspect --targets build
+
+    - name: Compile
+      run: |
+        export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
+        meson compile -C build -j $(nproc)
+
+    - name: Install and package as WCP
+      run: |
+        export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
+        meson install -C build --destdir dist
+        # Empaqueta como .tar.zst para Winlator WCP (incluye .so y headers)
+        cd dist
+        tar -cf ../vkd3d-proton-android-arm64ec.wcp usr/* --use-compress-program=zstd -c --ultra -22
+        cd ..
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: vkd3d-proton-android-arm64ec
+        path: |
+          build/*.so  # Librerías como libvkd3d-proton.so
+          vkd3d-proton-android-arm64ec.wcp
+          dist/
+        retention-days: 30
