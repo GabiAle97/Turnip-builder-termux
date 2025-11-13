@@ -10,13 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout VKD3D-Proton  # CAMBIO: Clona directamente del repo oficial
       uses: actions/checkout@v4
       with:
+        repository: 'HansKristian-Work/vkd3d-proton'  # Repo upstream con meson.build
+        ref: master  # Rama master (o 'develop' si existe)
         submodules: recursive  # Para SPIRV-Cross, GLSLang y otros submódulos
-        fetch-depth: 0  # Clon full para submodules si es necesario
+        fetch-depth: 0  # Clon full para submodules
 
-    - name: Debug checkout  # NUEVO: Diagnostica si meson.build está presente
+    - name: Debug checkout  # Mantenido para verificar (quita después si todo OK)
       run: |
         pwd
         ls -la .
