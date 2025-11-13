@@ -61,18 +61,19 @@ jobs:
         CC: clang
         CXX: clang++
         PKG_CONFIG_SYSROOT_DIR: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-        PKG_CONFIG_LIBDIR: "${PKG_CONFIG_SYSROOT_DIR}/usr/lib/aarch64-linux-android"
-        PKG_CONFIG_PATH: "${PKG_CONFIG_SYSROOT_DIR}/usr/lib/aarch64-linux-android/pkgconfig"
+        PKG_CONFIG_LIBDIR: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android"
+        PKG_CONFIG_PATH: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/pkgconfig"
       run: |
         export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
-        meson setup build --cross-file cross-android.meson \
+        # Configura el build con fuente explícita (.) para evitar errores de parsing
+        meson setup . build --cross-file cross-android.meson \
           -Ddebug=false \
           -Doptimization=s \
           -Dstrip=true \
-          -Dwine=disabled  # Desactiva wine/widl para build Android puro
-          # Opcional: -Dvulkan=enabled (por default)
-        # Verifica configuración
-        meson introspect --targets build
+          -Dwine=disabled
+          
+        # Verifica configuración (targets disponibles)
+        ninja -C build -t targets | head -20
 
     - name: Compile
       run: |
