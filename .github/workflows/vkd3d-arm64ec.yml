@@ -30,7 +30,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y meson ninja-build pkg-config git clang cmake ccache wine-stable
+        sudo apt install -y meson ninja-build pkg-config git clang cmake ccache
         sudo apt install -y libvulkan-dev spirv-tools glslang-dev  # Headers para Vulkan y shaders (host)
 
     - name: Setup Android NDK
@@ -54,10 +54,10 @@ jobs:
 
         [binaries]
         ar = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar'
-        c = '\$clang'
-        cpp = '\$clangpp'
-        c_ld = '\$lld'
-        cpp_ld = '\$lld'
+        c = ccache \$clang
+        cpp = ccache \$clangpp -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables --start-no-unused-arguments -static-libstdc++ --end-no-unused-arguments
+        c_ld = \$lld
+        cpp_ld = \$lld
         strip = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip'
         pkg-config = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/pkg-config'
 
@@ -74,10 +74,8 @@ jobs:
         [properties]
         sys_root = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot'
         bindgen_clang_arguments = ['-target', 'aarch64-linux-android34', '--sysroot', '$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot']
-        c_wrapper = 'ccache'
-        cpp_wrapper = 'ccache'
         EOF
-        # Debug: Verifica cross-file
+        # Debug: Verifica cross-file (debe mostrar paths expandidos)
         ls -la cross-android.meson
         cat cross-android.meson
 
@@ -90,7 +88,7 @@ jobs:
         PKG_CONFIG_PATH: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/pkgconfig"
       run: |
         export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
-        # Comando en una sola línea: Sin -Dwidl (Wine proporciona si es necesario, pero se omite para Android)
+        # Comando en una sola línea: Sin -Dwidl (Meson lo omite automáticamente)
         meson setup . build --cross-file cross-android.meson -Ddebug=false -Doptimization=s -Dstrip=true
         # Verifica configuración (targets disponibles)
         if [ -d build ]; then ninja -C build -t targets | head -20; else echo "Build dir no creado"; fi
@@ -112,4 +110,9 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: vkd3d
+        name: vkd3d-proton-android-arm64ec
+        path: |
+          build/*.so  # Librerías como libvkd3d-proton.so
+          vkd3d-proton-android-arm64ec.wcp
+          dist/
+        retention-days: 30
