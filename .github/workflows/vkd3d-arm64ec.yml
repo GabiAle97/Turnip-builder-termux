@@ -48,9 +48,10 @@ jobs:
         LLVM_AR="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
         LLVM_STRIP="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip"
         PKG_CONFIG="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/pkg-config"
-        cat > cross-android.meson << 'EOF'
+        SYSROOT="$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+        cat > cross-android.meson << EOF
         [binaries]
-        ar = $LLVM_AR
+        ar = '$LLVM_AR'
         c = ccache $CLANG
         cpp = ccache $CLANGPP -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables --start-no-unused-arguments -static-libstdc++ --end-no-unused-arguments
         c_ld = $LLD
@@ -69,16 +70,9 @@ jobs:
         cpp_args = ['-target', 'aarch64-linux-android34', '-D__ANDROID_API__=34', '-march=armv8.2-a+fp16+rcpc', '-mfpu=neon-fp-armv8', '-mfloat-abi=hard']
 
         [properties]
-        sys_root = $NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot
-        bindgen_clang_arguments = ['-target', 'aarch64-linux-android34', '--sysroot', '$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot']
+        sys_root = $SYSROOT
+        bindgen_clang_arguments = ['-target', 'aarch64-linux-android34', '--sysroot', '$SYSROOT']
         EOF
-        sed -i "s|\$CLANG|$CLANG|g" cross-android.meson
-        sed -i "s|\$CLANGPP|$CLANGPP|g" cross-android.meson
-        sed -i "s|\$LLD|$LLD|g" cross-android.meson
-        sed -i "s|\$LLVM_AR|$LLVM_AR|g" cross-android.meson
-        sed -i "s|\$LLVM_STRIP|$LLVM_STRIP|g" cross-android.meson
-        sed -i "s|\$PKG_CONFIG|$PKG_CONFIG|g" cross-android.meson
-        sed -i "s|\$NDK|$NDK|g" cross-android.meson
         # Debug: Verifica cross-file (debe mostrar paths expandidos)
         ls -la cross-android.meson
         cat cross-android.meson
