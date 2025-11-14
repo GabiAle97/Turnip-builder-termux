@@ -50,8 +50,8 @@ jobs:
         ar = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar'
         c = ['ccache', '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang']
         cpp = ['ccache', '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang++', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '--start-no-unused-arguments', '-static-libstdc++', '--end-no-unused-arguments']
-        c_ld = c
-        cpp_ld = cpp
+        c_ld = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang'
+        cpp_ld = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang++'
         strip = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip'
         pkg-config = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/pkg-config'
 
@@ -82,7 +82,7 @@ jobs:
         PKG_CONFIG_PATH: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/pkgconfig"
       run: |
         export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
-        # Comando en una sola línea: Sin -Dwidl (opción no existe; Meson lo salta automáticamente)
+        # Comando en una sola línea: Sin -Dwidl (Meson lo omite automáticamente)
         meson setup . build --cross-file cross-android.meson -Ddebug=false -Doptimization=s -Dstrip=true
         # Verifica configuración (targets disponibles)
         if [ -d build ]; then ninja -C build -t targets | head -20; else echo "Build dir no creado"; fi
