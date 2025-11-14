@@ -52,12 +52,12 @@ jobs:
         cat > cross-android.meson << EOF
         [binaries]
         ar = '$LLVM_AR'
-        c = ccache $CLANG
-        cpp = ccache $CLANGPP -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables --start-no-unused-arguments -static-libstdc++ --end-no-unused-arguments
-        c_ld = $LLD
-        cpp_ld = $LLD
-        strip = $LLVM_STRIP
-        pkg-config = $PKG_CONFIG
+        c = ['ccache', '$CLANG']
+        cpp = ['ccache', '$CLANGPP', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '--start-no-unused-arguments', '-static-libstdc++', '--end-no-unused-arguments']
+        c_ld = '$LLD'
+        cpp_ld = '$LLD'
+        strip = '$LLVM_STRIP'
+        pkg-config = '$PKG_CONFIG'
 
         [host_machine]
         system = 'android'
@@ -70,7 +70,7 @@ jobs:
         cpp_args = ['-target', 'aarch64-linux-android34', '-D__ANDROID_API__=34', '-march=armv8.2-a+fp16+rcpc', '-mfpu=neon-fp-armv8', '-mfloat-abi=hard']
 
         [properties]
-        sys_root = $SYSROOT
+        sys_root = '$SYSROOT'
         bindgen_clang_arguments = ['-target', 'aarch64-linux-android34', '--sysroot', '$SYSROOT']
         EOF
         # Debug: Verifica cross-file (debe mostrar paths expandidos)
