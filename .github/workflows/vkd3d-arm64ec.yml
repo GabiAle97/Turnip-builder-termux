@@ -31,7 +31,8 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y meson ninja-build pkg-config git clang cmake ccache
-        sudo apt install -y libvulkan-dev spirv-tools glslang-dev  # Headers para Vulkan y shaders (host)
+        sudo apt install -y libvulkan-dev spirv-tools glslang-dev
+        sudo apt install -y mingw-w64
 
     - name: Setup Android NDK
       uses: nttld/setup-ndk@v1
