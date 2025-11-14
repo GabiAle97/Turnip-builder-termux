@@ -3,7 +3,7 @@ name: Build VKD3D-Proton for Android/Winlator (aarch64)
 on:
   push:
     branches: [ master ]  # Cambia a 'develop' si usas una fork con esa rama
-  workflow_dispatch:  # Permite ejecuci√≥n manual
+  workflow_dispatch:  # Permite ejecuciÛn manual
 
 jobs:
   build:
@@ -15,29 +15,29 @@ jobs:
       with:
         repository: 'HansKristian-Work/vkd3d-proton'  # Repo upstream con meson.build
         ref: master  # Rama master (o 'develop' si existe)
-        submodules: recursive  # Para SPIRV-Cross, GLSLang y otros subm√≥dulos
+        submodules: recursive  # Para SPIRV-Cross, GLSLang y otros submÛdulos
         fetch-depth: 0  # Clon full para submodules
 
-    - name: Debug checkout  # Mantenido para verificar (quita despu√©s si todo OK)
+    - name: Debug checkout  # Mantenido para verificar (quita despuÈs si todo OK)
       run: |
         pwd
         ls -la .
         echo "--- Buscando meson.build ---"
-        find . -name "meson.build" -type f | head -5 || echo "No se encontr√≥ meson.build"
+        find . -name "meson.build" -type f | head -5 || echo "No se encontrÛ meson.build"
         echo "--- Contenido de root ---"
         ls -la | grep -E "(meson\.build|README|include|src|subprojects)"
 
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y meson ninja-build pkg-config git clang cmake ccache
+        sudo apt install -y meson ninja-build pkg-config git clang cmake ccache wine-stable
         sudo apt install -y libvulkan-dev spirv-tools glslang-dev  # Headers para Vulkan y shaders (host)
 
     - name: Setup Android NDK
       uses: nttld/setup-ndk@v1
       id: setup-ndk
       with:
-        ndk-version: r26b  # Versi√≥n reciente con LLVM/Clang para API 34+
+        ndk-version: r26b  # VersiÛn reciente con LLVM/Clang para API 34+
 
     - name: Create Meson cross-file for Android aarch64 (Winlator/FEX-compatible)
       run: |
@@ -54,10 +54,10 @@ jobs:
 
         [binaries]
         ar = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar'
-        c = ['ccache', '\$clang']
-        cpp = ['ccache', '\$clangpp', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '--start-no-unused-arguments', '-static-libstdc++', '--end-no-unused-arguments']
-        c_ld = '\$clang'
-        cpp_ld = '\$clangpp'
+        c = '\$clang'
+        cpp = '\$clangpp'
+        c_ld = '\$lld'
+        cpp_ld = '\$lld'
         strip = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip'
         pkg-config = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/pkg-config'
 
@@ -74,6 +74,8 @@ jobs:
         [properties]
         sys_root = '$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot'
         bindgen_clang_arguments = ['-target', 'aarch64-linux-android34', '--sysroot', '$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot']
+        c_wrapper = 'ccache'
+        cpp_wrapper = 'ccache'
         EOF
         # Debug: Verifica cross-file
         ls -la cross-android.meson
@@ -88,9 +90,9 @@ jobs:
         PKG_CONFIG_PATH: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/pkgconfig"
       run: |
         export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
-        # Comando en una sola l√≠nea: Sin -Dwidl (Meson lo omite autom√°ticamente)
+        # Comando en una sola lÌnea: Sin -Dwidl (Wine proporciona si es necesario, pero se omite para Android)
         meson setup . build --cross-file cross-android.meson -Ddebug=false -Doptimization=s -Dstrip=true
-        # Verifica configuraci√≥n (targets disponibles)
+        # Verifica configuraciÛn (targets disponibles)
         if [ -d build ]; then ninja -C build -t targets | head -20; else echo "Build dir no creado"; fi
 
     - name: Compile
@@ -110,9 +112,4 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: vkd3d-proton-android-arm64ec
-        path: |
-          build/*.so  # Librer√≠as como libvkd3d-proton.so
-          vkd3d-proton-android-arm64ec.wcp
-          dist/
-        retention-days: 30
+        name: vkd3d
