@@ -91,6 +91,7 @@ jobs:
     - name: Setup Meson build
       # Removed env vars like PKG_CONFIG_SYSROOT_DIR as they are handled correctly by the cross-file approach
       run: |
+        export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
         meson setup build \
         --cross-file cross-android.meson \
         -Ddebug=false \
@@ -101,10 +102,12 @@ jobs:
 
     - name: Compile
       run: |
+        export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
         meson compile -C build -j $(nproc)
 
     - name: Install and package as WCP
       run: |
+        export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
         meson install -C build --destdir dist
         cd dist
         # Note: tar arguments might need adjustment depending on exact requirements.
