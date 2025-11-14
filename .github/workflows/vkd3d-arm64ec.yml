@@ -2,23 +2,23 @@ name: Build VKD3D-Proton for Android/Winlator (aarch64)
 
 on:
   push:
-    branches: [ master ]  # Cambia a 'develop' si usas una fork con esa rama
-  workflow_dispatch:  # Permite ejecución manual
+    branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slatest
 
     steps:
     - name: Checkout VKD3D-Proton
       uses: actions/checkout@v4
       with:
-        repository: 'HansKristian-Work/vkd3d-proton'  # Repo upstream con meson.build
-        ref: master  # Rama master (o 'develop' si existe)
-        submodules: recursive  # Para SPIRV-Cross, GLSLang y otros submódulos
-        fetch-depth: 0  # Clon full para submodules
+        repository: 'HansKristian-Work/vkd3d-proton'
+        ref: master
+        submodules: recursive
+        fetch-depth: 0
 
-    - name: Debug checkout  # Mantenido para verificar (quita después si todo OK)
+    - name: Debug checkout
       run: |
         pwd
         ls -la .
@@ -32,15 +32,15 @@ jobs:
         sudo apt update
         sudo apt install -y meson ninja-build pkg-config git clang cmake ccache
         sudo apt install -y libvulkan-dev spirv-tools glslang-dev
-        sudo apt install -y mingw-w64
+        sudo apt install -y mingw-w64 mingw-w64-tools  # <-- añade mingw-w64-tools para widl
 
     - name: Setup Android NDK
       uses: nttld/setup-ndk@v1
       id: setup-ndk
       with:
-        ndk-version: r26b  # Versión reciente con LLVM/Clang para API 34+
+        ndk-version: r26b
 
-    - name: Create Meson cross-file for Android aarch64 (Winlator/FEX-compatible)
+    - name: Create Meson cross-file for Android aarch64
       run: |
         export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
         CLANG="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang"
@@ -74,7 +74,6 @@ jobs:
         sys_root = '$SYSROOT'
         bindgen_clang_arguments = ['-target', 'aarch64-linux-android34', '--sysroot', '$SYSROOT']
         EOF
-        # Debug: Verifica cross-file (debe mostrar paths expandidos)
         ls -la cross-android.meson
         cat cross-android.meson
 
@@ -93,7 +92,6 @@ jobs:
         -Doptimization=s \
         -Dstrip=true \
         -Denable_tests=false
-        # Verifica configuración (targets disponibles)
         if [ -d build ]; then ninja -C build -t targets | head -20; else echo "Build dir no creado"; fi
 
     - name: Compile
@@ -105,7 +103,6 @@ jobs:
       run: |
         export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
         meson install -C build --destdir dist
-        # Empaqueta como .tar.zst para Winlator WCP (incluye .so y headers)
         cd dist
         tar -cf ../vkd3d-proton-android-arm64ec.wcp usr/* --use-compress-program=zstd -c --ultra -22
         cd ..
@@ -115,7 +112,7 @@ jobs:
       with:
         name: vkd3d-proton-android-arm64ec
         path: |
-          build/*.so  # Librerías como libvkd3d-proton.so
+          build/*.so
           vkd3d-proton-android-arm64ec.wcp
           dist/
         retention-days: 30
