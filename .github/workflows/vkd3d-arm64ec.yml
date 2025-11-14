@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-slatest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout VKD3D-Proton
