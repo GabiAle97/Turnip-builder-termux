@@ -82,8 +82,8 @@ jobs:
         PKG_CONFIG_PATH: "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/pkgconfig"
       run: |
         export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
-        # Comando en una sola línea: Desactiva widl para Android (no necesario)
-        meson setup . build --cross-file cross-android.meson -Ddebug=false -Doptimization=s -Dstrip=true -Dwidl=disabled
+        # Comando en una sola línea: Sin -Dwidl (opción no existe)
+        meson setup . build --cross-file cross-android.meson -Ddebug=false -Doptimization=s -Dstrip=true
         # Verifica configuración (targets disponibles)
         if [ -d build ]; then ninja -C build -t targets | head -20; else echo "Build dir no creado"; fi
 
