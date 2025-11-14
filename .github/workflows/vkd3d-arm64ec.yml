@@ -27,22 +27,21 @@ jobs:
         echo "--- Contenido de root ---"
         ls -la | grep -E "(meson\.build|README|include|src|subprojects)"
 
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y meson ninja-build pkg-config git clang cmake ccache
-        sudo apt install -y libvulkan-dev spirv-tools glslang-dev
-        # The next line is correct, it installs the native widl for the build machine
-        sudo apt install -y mingw-w64-tools 
-
     - name: Setup Android NDK
       uses: nttld/setup-ndk@v1
       id: setup-ndk
       with:
         ndk-version: r26b
 
-    - name: Create Meson cross-file for Android aarch64
+    - name: Install dependencies and Create Meson cross-file for Android aarch64
       run: |
+        # 1. Instalar dependencias del sistema (incluyendo mingw-w64-tools que provee widl)
+        sudo apt update
+        sudo apt install -y meson ninja-build pkg-config git clang cmake ccache
+        sudo apt install -y libvulkan-dev spirv-tools glslang-dev
+        sudo apt install -y mingw-w64-tools 
+
+        # 2. Configurar variables de entorno y rutas del NDK
         export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
         CLANG="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang"
         CLANGPP="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang++"
@@ -52,13 +51,14 @@ jobs:
         PKG_CONFIG="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/pkg-config"
         SYSROOT="$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
         
-        # Determine the full path to the native 'widl' executable installed by apt
+        # 3. Determinar la ruta completa a 'widl' (funciona porque se instaló en este mismo paso/shell)
         WIDL_PATH=$(which widl)
         if [ -z "$WIDL_PATH" ]; then
-            echo "Error: widl not found after installation. Check apt install step."
+            echo "Error: widl not found. Check installation."
             exit 1
         fi
 
+        # 4. Crear el archivo cruzado (cross-file)
         cat > cross-android.meson << EOF
         [binaries]
         ar = '$LLVM_AR'
@@ -68,7 +68,7 @@ jobs:
         cpp_ld = '$LLD'
         strip = '$LLVM_STRIP'
         pkg-config = '$PKG_CONFIG'
-        # Explicitly define the path for the native widl (build machine binary)
+        # Ruta explícita para widl nativo (soluciona el error)
         widl = '$WIDL_PATH' 
 
         [host_machine]
@@ -89,9 +89,8 @@ jobs:
         cat cross-android.meson
 
     - name: Setup Meson build
-      # Removed env vars like PKG_CONFIG_SYSROOT_DIR as they are handled correctly by the cross-file approach
+      # Ya no necesitamos las variables de entorno PKG_CONFIG_* aquí porque la configuración está en el cross-file
       run: |
-        export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
         meson setup build \
         --cross-file cross-android.meson \
         -Ddebug=false \
@@ -102,17 +101,14 @@ jobs:
 
     - name: Compile
       run: |
-        export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
         meson compile -C build -j $(nproc)
 
     - name: Install and package as WCP
       run: |
-        export NDK=${{ steps.setup-ndk.outputs.ndk-path }}
         meson install -C build --destdir dist
         cd dist
-        # Note: tar arguments might need adjustment depending on exact requirements.
-        # This command creates a zstd compressed tarball (WCP)
-        tar -cf ../vkd3d-proton-android-arm64ec.wcp . --use-compress-program=zstd -c --ultra -22
+        # El comando tar fue ajustado ligeramente para empaquetar el contenido de dist correctamente.
+        tar --use-compress-program=zstd -cf ../vkd3d-proton-android-arm64ec.wcp . --ultra -22
         cd ..
 
     - name: Upload artifacts
