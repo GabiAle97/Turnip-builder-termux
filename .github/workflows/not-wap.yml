@@ -25,6 +25,6 @@ jobs:
       - name: Ejecutar script
         env:
           CALLMEBOT_API_KEY: ${{ secrets.CALLMEBOT_API_KEY }}
-          TU_NUMERO_WHATSAPP: ${{ secrets.NUMERO_WHATSAPP }}
+          TU_NUMERO_WHATSAPP: ${{ secrets.TU_NUMERO_WHATSAPP }}
           INTERVALO_MINUTOS: ${{ secrets.INTERVALO_MINUTOS }}
         run: python3 UrbanoWAP.py   # cambia el nombre si es necesario

@@ -12,7 +12,7 @@ URL_API = f"https://apis.urbano.com.ar/cespecifica/?shi_codigo={SHI_CODIGO}&cli_
 
 # Estas variables las inyectará GitHub Actions
 CALLMEBOT_API_KEY = os.getenv("CALLMEBOT_API_KEY")
-TU_NUMERO_WHATSAPP = "+5491123905645"
+TU_NUMERO_WHATSAPP = os.getenv("TU_NUMERO_WHATSAPP")
 INTERVALO_MINUTOS = int(os.getenv("INTERVALO_MINUTOS", "10"))  # 10 por defecto
 # ====================================================
 
