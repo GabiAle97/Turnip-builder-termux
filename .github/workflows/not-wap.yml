@@ -1,0 +1,30 @@
+name: Enviar notificación WhatsApp
+
+on:  
+  # También puedes ejecutarlo manualmente
+  workflow_dispatch:
+
+jobs:
+  enviar-mensaje:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Ejecutar script
+        env:
+          CALLMEBOT_API_KEY: ${{ secrets.CALLMEBOT_API_KEY }}
+          TU_NUMERO_WHATSAPP: ${{ secrets.NUMERO_WHATSAPP }}
+          INTERVALO_MINUTOS: ${{ secrets.INTERVALO_MINUTOS }}
+        run: python tu_script_principal.py   # cambia el nombre si es necesario
