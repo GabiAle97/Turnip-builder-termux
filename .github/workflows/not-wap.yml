@@ -27,4 +27,4 @@ jobs:
           CALLMEBOT_API_KEY: ${{ secrets.CALLMEBOT_API_KEY }}
           TU_NUMERO_WHATSAPP: ${{ secrets.NUMERO_WHATSAPP }}
           INTERVALO_MINUTOS: ${{ secrets.INTERVALO_MINUTOS }}
-        run: python tu_script_principal.py   # cambia el nombre si es necesario
+        run: python3 UrbanoWAP.py   # cambia el nombre si es necesario
